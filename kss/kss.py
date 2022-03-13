@@ -48,6 +48,7 @@ def split_sentences(
     backend: str = "pynori",
     num_workers: int = -1,
     disable_gc: bool = True,
+    disable_pre_process: bool = False,
     disable_mp_post_process: bool = False,
 ) -> Union[List[str], List[List[str]]]:
     """
@@ -143,6 +144,7 @@ def split_sentences(
                 max_recover_step=max_recover_step,
                 max_recover_length=max_recover_length,
                 backend=backend,
+                disable_pre_process=disable_pre_process,
             ),
             mp_input_texts,
         )
@@ -155,6 +157,7 @@ def split_sentences(
                 max_recover_step=max_recover_step,
                 max_recover_length=max_recover_length,
                 backend=backend,
+                disable_pre_process=disable_pre_process,
             )
             for t in mp_input_texts
         ]
@@ -243,21 +246,24 @@ def _split_sentences(
     max_recover_step: int,
     max_recover_length: int,
     backend: str,
+    disable_pre_process: bool,
     recover_step: int = 0,
 ):
     if use_quotes_brackets_processing:
         text = text.replace("\u200b", "")
 
     use_morpheme = backend != "none"
-    prep = Preprocessor(use_morpheme=use_morpheme)
+    if not disable_pre_process:
+        prep = Preprocessor(use_morpheme=use_morpheme)
     post = Postprocessor()
 
     if not use_morpheme:
         # but if you use morpheme feature, it is unnecessary.
         text = prep.add_ec_cases_to_dict(text)
 
-    text = prep.add_emojis_to_dict(text)
-    text = prep.backup(text)
+    if not disable_pre_process:
+        text = prep.add_emojis_to_dict(text)
+        text = prep.backup(text)
 
     if use_quotes_brackets_processing:
         for s in Const.quotes_or_brackets:
@@ -534,7 +540,7 @@ def _split_sentences(
         cur_sentence.append(prev)
         results.append(cur_sentence)
 
-    results = prep.tostring(results)
+    results = Preprocessor.tostring(results)
 
     if use_heuristic is True:
         results = post.apply_heuristic(text, results, use_morpheme)
@@ -546,6 +552,7 @@ def _split_sentences(
         "max_recover_length": max_recover_length,
         "backend": backend,
         "recover_step": recover_step + 1,
+        "disable_pre_process": disable_pre_process,
     }
 
     if recover_step < max_recover_step:
@@ -572,11 +579,17 @@ def _split_sentences(
             )
 
     outputs = []
-    for s in results:
-        s = prep.restore(s)
-        if use_quotes_brackets_processing:
-            s = s.replace("\u200b", "")
-        outputs.append(s)
+    if disable_pre_process:
+        for s in results:
+            if use_quotes_brackets_processing:
+                s = s.replace("\u200b", "")
+            outputs.append(s)
+    else:
+        for s in results:
+            s = prep.restore(s)
+            if use_quotes_brackets_processing:
+                s = s.replace("\u200b", "")
+            outputs.append(s)
 
     return outputs
 
