@@ -88,12 +88,8 @@ def split_sentences(
     assert isinstance(
         use_quotes_brackets_processing, bool
     ), "param `use_quotes_brackets_processing` must be `bool` type"
-    assert isinstance(
-        max_recover_step, int
-    ), "param `max_recover_step` must be `int` type"
-    assert isinstance(
-        max_recover_length, int
-    ), "param `max_recover_length` must be `int` type"
+    assert isinstance(max_recover_step, int), "param `max_recover_step` must be `int` type"
+    assert isinstance(max_recover_length, int), "param `max_recover_length` must be `int` type"
     assert isinstance(num_workers, int), "param `num_workers` must be `int` type"
 
     if disable_gc:
@@ -398,8 +394,7 @@ def _split_sentences(
                         and check_pos(eojeol, ["ETN", "EF"])
                         and check_pos(eojeols[i + 1], ["SP", "SE", "SF"])
                         and not check_pos(eojeol, ["J", "XS"])  # ETN+XSN 같은 케이스 막기위해
-                        and eojeol.eojeol
-                        not in ["다", "요", "죠", "기"]  # ~ 하기 (명사파생 접미사가 전성어미로 오해되는 경우)
+                        and eojeol.eojeol not in ["다", "요", "죠", "기"]  # ~ 하기 (명사파생 접미사가 전성어미로 오해되는 경우)
                     ):
                         cur_stat = Stats.EOMI
                         # 일반적으로 적용할 수 있는 어미세트 NEXT 세트 적용.
@@ -468,10 +463,7 @@ def _split_sentences(
                     endif = True
 
             if not endif:
-                if (
-                    not Table[cur_stat][eojeol.eojeol]
-                    or Table[cur_stat][eojeol.eojeol] & ID.PREV
-                ):  # NOT exists
+                if not Table[cur_stat][eojeol.eojeol] or Table[cur_stat][eojeol.eojeol] & ID.PREV:  # NOT exists
 
                     if eojeol.eojeol not in Const.not_endpoint:
                         results.append(cur_sentence)
@@ -483,10 +475,7 @@ def _split_sentences(
 
                     if eojeol.eojeol in Const.double_quotes:
                         if use_quotes_brackets_processing:
-                            if (
-                                eojeol.eojeol
-                                in Const.double_quotes_open_to_close.keys()
-                            ):
+                            if eojeol.eojeol in Const.double_quotes_open_to_close.keys():
                                 double_quote_pop = do_push_pop_symbol(
                                     double_stack,
                                     Const.double_quotes_open_to_close[eojeol.eojeol],
@@ -501,10 +490,7 @@ def _split_sentences(
 
                     elif eojeol.eojeol in Const.single_quotes:
                         if use_quotes_brackets_processing:
-                            if (
-                                eojeol.eojeol
-                                in Const.single_quotes_open_to_close.keys()
-                            ):
+                            if eojeol.eojeol in Const.single_quotes_open_to_close.keys():
                                 single_quote_pop = do_push_pop_symbol(
                                     single_stack,
                                     Const.single_quotes_open_to_close[eojeol.eojeol],

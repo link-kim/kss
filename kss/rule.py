@@ -1308,12 +1308,6 @@ Table = create_dict(
     default=create_dict({}),
 )
 
-post_processing_da = list(
-    set([f"{x} {_}{y} " for y in ["다"] for _ in yo for x in before])
-)
-post_processing_yo = list(
-    set([f"{x} {_}{y} " for y in ["요"] for _ in yo for x in before])
-)
-post_processing_jyo = list(
-    set([f"{x} {_}{j} " for j in ["죠"] for _ in jyo for x in before])
-)
+post_processing_da = list(set([f"{x} {_}{y} " for y in ["다"] for _ in yo for x in before]))
+post_processing_yo = list(set([f"{x} {_}{y} " for y in ["요"] for _ in yo for x in before]))
+post_processing_jyo = list(set([f"{x} {_}{j} " for j in ["죠"] for _ in jyo for x in before]))

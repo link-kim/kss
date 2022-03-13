@@ -21,9 +21,7 @@ from kss.pynori.dict.character_definition import (
 )
 from kss.rule import Table, Stats
 
-logging.basicConfig(
-    format="[Korean Sentence Splitter]: %(message)s", level=logging.WARNING
-)
+logging.basicConfig(format="[Korean Sentence Splitter]: %(message)s", level=logging.WARNING)
 
 
 class Const:
@@ -121,9 +119,7 @@ class Const:
     punctuation = [";", ".", "?", "!", "~", "…"]
     special = punctuation + brackets
     quotes_or_brackets = single_quotes + double_quotes + brackets
-    endpoint = (
-        quotes_or_brackets + punctuation + [" "] + list(Table[Stats.COMMON].keys())
-    )
+    endpoint = quotes_or_brackets + punctuation + [" "] + list(Table[Stats.COMMON].keys())
     not_endpoint = [",", ":", "\u200b"] + quotes_or_brackets + ["<", ">"]
 
     @staticmethod
@@ -223,7 +219,6 @@ class Eojeol:
 
     def __repr__(self):
         return f"('{self.eojeol}', {self.pos})"
-
 
 
 @functools.lru_cache(maxsize=2)
@@ -463,9 +458,10 @@ def get_chunk_with_index(text, span):
 
 
 def preprocess_text(text):
-    total_text = "".join([c for c in text if c in _posix or len(get_emoji(c)) != 0])
+    # total_text = "".join([c for c in text if c in _posix or len(get_emoji(c)) != 0])
 
-    return Const.pattern_space.sub(" ", total_text)
+    # return Const.pattern_space.sub(" ", total_text)
+    return text
 
 
 _posix = list(chr(x) for x in categories.keys())
