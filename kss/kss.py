@@ -430,7 +430,7 @@ def _split_sentences(
                         # NEXT1 + NEXT => 자르지 않는다.
                         cur_sentence.append(prev)
 
-                    elif prev_non_space.eojeol in Table[Stats.COMMON]:
+                    elif Table[Stats.COMMON][prev_non_space.eojeol] > 0:
                         # NEW RULE for KSS 3 to fix following issue.
                         # https://github.com/hyunwoongko/kss/issues/7
 
